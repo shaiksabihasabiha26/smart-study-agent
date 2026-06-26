@@ -17,7 +17,6 @@ Generate 5 multiple-choice quiz questions from these study notes.
 Rules:
 - Each question should have 4 options (A, B, C, D).
 - Mention the correct answer after each question.
-- Keep the questions clear and concise.
 
 Study Notes:
 ${notes}
@@ -31,9 +30,7 @@ ${notes}
     console.error(error);
 
     return NextResponse.json(
-      {
-        quiz: "Failed to generate quiz.",
-      },
+      { quiz: "Failed to generate quiz." },
       { status: 500 }
     );
   }
