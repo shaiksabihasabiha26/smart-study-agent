@@ -12,7 +12,17 @@ export async function POST(req: Request) {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: `
-Summarize these study notes in simple, clear points.
+Generate 10 study flashcards from these notes.
+
+Format:
+
+Flashcard 1
+Question:
+Answer:
+
+Flashcard 2
+Question:
+Answer:
 
 Study Notes:
 ${notes}
@@ -20,14 +30,14 @@ ${notes}
     });
 
     return NextResponse.json({
-      summary: response.text,
+      flashcards: response.text,
     });
   } catch (error) {
     console.error(error);
 
     return NextResponse.json(
       {
-        summary: "Failed to generate summary.",
+        flashcards: "Failed to generate flashcards.",
       },
       { status: 500 }
     );

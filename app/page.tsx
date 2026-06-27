@@ -5,8 +5,17 @@ import { useState } from "react";
 export default function Home() {
   const [notes, setNotes] = useState("");
   const [output, setOutput] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const generateSummary = async () => {
+    if (!notes.trim()) {
+      setOutput("Please enter some study notes first.");
+      return;
+    }
+
+    setLoading(true);
+    setOutput("");
+
     try {
       const response = await fetch("/api/generate", {
         method: "POST",
@@ -21,10 +30,20 @@ export default function Home() {
     } catch (error) {
       console.error(error);
       setOutput("Failed to generate summary.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const generateQuiz = async () => {
+    if (!notes.trim()) {
+      setOutput("Please enter some study notes first.");
+      return;
+    }
+
+    setLoading(true);
+    setOutput("");
+
     try {
       const response = await fetch("/api/quiz", {
         method: "POST",
@@ -39,6 +58,36 @@ export default function Home() {
     } catch (error) {
       console.error(error);
       setOutput("Failed to generate quiz.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateFlashcards = async () => {
+    if (!notes.trim()) {
+      setOutput("Please enter some study notes first.");
+      return;
+    }
+
+    setLoading(true);
+    setOutput("");
+
+    try {
+      const response = await fetch("/api/flashcards", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ notes }),
+      });
+
+      const data = await response.json();
+      setOutput(data.flashcards);
+    } catch (error) {
+      console.error(error);
+      setOutput("Failed to generate flashcards.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -56,19 +105,29 @@ export default function Home() {
           onChange={(e) => setNotes(e.target.value)}
         />
 
-        <div className="flex gap-4 mt-4">
+        <div className="flex gap-4 mt-4 flex-wrap">
           <button
             onClick={generateSummary}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            disabled={loading}
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg disabled:bg-gray-400"
           >
-            Generate Summary
+            {loading ? "Generating..." : "Generate Summary"}
           </button>
 
           <button
             onClick={generateQuiz}
-            className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700"
+            disabled={loading}
+            className="px-6 py-3 bg-green-600 text-white rounded-lg disabled:bg-gray-400"
           >
-            Generate Quiz
+            {loading ? "Generating..." : "Generate Quiz"}
+          </button>
+
+          <button
+            onClick={generateFlashcards}
+            disabled={loading}
+            className="px-6 py-3 bg-purple-600 text-white rounded-lg disabled:bg-gray-400"
+          >
+            {loading ? "Generating..." : "Generate Flashcards"}
           </button>
         </div>
 
