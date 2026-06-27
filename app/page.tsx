@@ -91,13 +91,41 @@ export default function Home() {
     }
   };
 
+  const generateStudyPlan = async () => {
+    if (!notes.trim()) {
+      setOutput("Please enter some study notes first.");
+      return;
+    }
+
+    setLoading(true);
+    setOutput("");
+
+    try {
+      const response = await fetch("/api/studyplan", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ notes }),
+      });
+
+      const data = await response.json();
+      setOutput(data.studyPlan);
+    } catch (error) {
+      console.error(error);
+      setOutput("Failed to generate study plan.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <main className="min-h-screen p-8 bg-gray-100">
       <h1 className="text-4xl font-bold text-center mb-8">
         Smart Study Agent
       </h1>
 
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         <textarea
           className="w-full h-64 p-4 border rounded-lg"
           placeholder="Paste your notes here..."
@@ -128,6 +156,14 @@ export default function Home() {
             className="px-6 py-3 bg-purple-600 text-white rounded-lg disabled:bg-gray-400"
           >
             {loading ? "Generating..." : "Generate Flashcards"}
+          </button>
+
+          <button
+            onClick={generateStudyPlan}
+            disabled={loading}
+            className="px-6 py-3 bg-orange-600 text-white rounded-lg disabled:bg-gray-400"
+          >
+            {loading ? "Generating..." : "Generate Study Plan"}
           </button>
         </div>
 
